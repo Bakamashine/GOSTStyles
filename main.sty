@@ -1,0 +1,27 @@
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\renewcommand{\baselinestretch}{1.5}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage[english, russian]{babel}
+%\usepackage{geometry}
+\usepackage[left=3cm,right=1cm,top=2cm,bottom=2cm]{geometry}
+\pagestyle{empty}
+
+\newcommand{\titleOne}[1]{%
+	{\centering\LARGE\bfseries #1\par}%
+}
+
+
+\newcommand{\titleTwo}[1]{%
+	{\large\bfseries #1\par}%
+}
+
+\newcommand{\image}[2]{
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.5\linewidth]{#1}
+		\caption{#2}
+		\label{fig:placeholder}
+	\end{figure}
+}
