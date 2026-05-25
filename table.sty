@@ -1,6 +1,3 @@
-%\NeedsTeXFormat{LaTeX2e}
-%\ProvidesPackage{kursovaya}[2026/01/26 Background page tables]
-
 \RequirePackage{array}
 \RequirePackage{tabularx}
 \RequirePackage{geometry}
@@ -15,42 +12,30 @@
 }
 \usepackage{tabularx}
 \usepackage{multirow}
-% ---------- Нижняя Таблица ----------
+\usepackage{lipsum}
 
 \newcommand{\BackgroundTopTable}{%
-
-\begin{tabularx}{\textwidth}{|c|c|c|c|c|X|c|}
-  \hline
-  & & & & &
-  \multirow{3}{=}{\centering 09.02.07 Ф 2484 25 КП-ПЗ} &
-  \multirow{2}{2em}{\centering Лист} \\
-  \cline{1-5}
-  & & & & & & \\
-  \cline{1-5}\cline{7-7}
-  Изм. & Лист & № докум. & Подпись & Дата & & \thepage \\
-  \hline
-\end{tabularx}
-  
+	\begin{tabularx}{\paperwidth}[b]{|c|c|c|c|c|X|c|}
+		\hline
+		                                                     &      &             &           &      &
+		\multirow{3}{=}{\centering 09.02.07 Ф 2484 25 КП-ПЗ} &
+		\multirow{2}{2em}{\centering Page}                                                                          \\
+		\cline{1-5}
+		                                                     &      &             &           &      &   &          \\
+		\cline{1-5}\cline{7-7}
+		Изм.                                                 & Page & № Document. & Signature & Date &   & \thepage \\
+		\hline
+	\end{tabularx}
 }
 
 
-% ---------- Размещение в фоне ----------
-\AddToShipoutPictureBG{%
-	% Верх
-%% 	\AtPageUpperLeft{%
-%% 		\raisebox{-15mm}{%
-%% 			\makebox[\paperwidth]{%
-%% 				\hspace*{25mm}\BackgroundTopTable
-%% 			}%
-%% 		}%
-%% 	}
-        %
-	% Низ
+
+\AddToShipoutPictureBG{%        
 	\AtPageLowerLeft{%
-		\raisebox{20mm}{%
-			\makebox[\paperwidth]{%
-				\hspace*{0mm}\BackgroundTopTable
-			}%
+		\makebox[\paperwidth]{%
+			\hspace*{0.5\fboxsep}\BackgroundTopTable
 		}%
 	}%
 }
+
+\usepackage{lipsum}
