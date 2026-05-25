@@ -2,12 +2,42 @@
 \usepackage{gost}
 \usepackage{table}
 \begin{document}
-	
-\titleOne{Тест большого заголовка}
-\titleTwo{Тест среднего заголовка}
-\titleThree{Тест маленького заголовка}
-\image{img/star.jpg}{Звёзды}
 
-\lipsum[1-10]
-	
+\titleOne{Пример большого заголовка}
+\titleTwo{Пример среднего заголовка}
+\titleThree{Пример маленького заголовка}
+\image{img/star.jpg}{Пример большой картинки}
+\smallImage{img/star.jpg}{Пример маленькой картинки}
+
+Пример нумерованного списка: \par
+\begin{enumerate}
+    \item First
+    \item Second
+    \item Third
+    \item Fourth
+    \item Fifth
+\end{enumerate}
+
+
+Пример списка: \par
+\begin{itemize}
+    \item First
+    \item Second
+    \item Third
+    \item Fourth
+    \item Fifth
+\end{itemize}
+
+
+Пример обычного кода: \par
+\MyVerbatim{code/example_code.txt}
+
+Пример уменьшенного кода: \par
+\MyVerbatimLarge{code/example_code.txt}
+
+Остальной текст: \par
+\lipsum[1-150]
+
+
+
 \end{document}

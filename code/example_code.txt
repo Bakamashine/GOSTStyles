@@ -1,0 +1,153 @@
+<?php
+
+/**
+ * Подключение к БД
+ * @param string $db_name Название БД
+ * @param string $host Хост, на котором хостится БД
+ * @param string $user Имя пользователя
+ * @param string $password Пароль от БД
+ * @param mixed $charset Кодировка
+ * @return PDO
+ */
+function connect_DB(string $db_name, string $host, string $user, string $password, $charset = 'utf8')
+{
+    $dsn = "mysql:host=$host;charset=$charset;dbname=$db_name";
+    $opt = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false,
+        // PDO::FETCH_COLUMN => true
+    ];
+    return new PDO($dsn, $user, $password, $opt);
+}
+
+// function nameof($value) {
+//     return substr("$value", 1);
+// }
+
+// function debug(...$values)
+// {
+//     echo "DEBUG: \n";
+//     foreach ($values as $value) {
+//         // echo nameof($value) . ": $value \n";
+//         echo <<<DEBUG
+//             $value
+//             \n
+//         DEBUG;
+//     }
+//     echo substr("-", 50) . "\n";
+// }
+
+/**
+ * Поиск определённого флага
+ * @param string $full Полное имя
+ * @param string $short Короткое имя
+ * @param array $argv Массив с аргументами
+ * @return bool
+ */
+function findFlag(string $full, string $short, array $argv)
+{
+    return in_array($full, $argv) || in_array($short, $argv);
+}
+
+/**
+ * Вывод помощи
+ * @return never
+ */
+function outputHelp(): void
+{
+    echo <<<HELP
+        -h, --help - вызов помощи
+        -u, --user - имя пользователя
+        -p, --password - пароль от БД
+        -n, --name - название БД
+        --old_url - старый URL
+        --new_url - новый URL
+        --host - Хост
+    HELP;
+    exit(0);
+}
+
+if (count($argv) == 1 || findFlag("--help", '-h', $argv)) {
+    outputHelp();
+}
+
+$options = getopt("u:p:n:", ["user:", "password:", "name:", "old_url:", "new_url:", "host:"]);
+$user = $options['u'] ?? $options['user'] ?? null;
+$password = $options['p'] ?? $options['password'] ?? "";
+$db_name = $options['n'] ?? $options['name'] ?? null;
+$old_url = $options['old_url'] ?? null;
+$new_url = $options['new_url'] ?? null;
+$host = $options['host'] ?? null;
+
+echo <<<INFO
+    Ваши данные для подключения к БД:
+    User: $user
+    Password: $password
+    DB_name: $db_name
+    Old_URL: $old_url
+    New_URL: $new_url
+    Host: $host
+INFO;
+
+if (!$user || !$db_name || !$old_url || !$new_url || !$host) {
+    echo "Вы забыли что-то ввести\n";
+    outputHelp();
+}
+
+try {
+    $pdo = connect_DB($db_name, $host, $user, $password);
+    echo "Подключение к БД было успешным!\n";
+
+    $tables = $pdo->query("show tables")->fetchAll(PDO::FETCH_COLUMN);
+    echo "Все таблицы:\n";
+
+    // Вывод всех таблиц
+    foreach ($tables as $table) {
+        // var_dump($tables);
+        echo "-" . $table . "\n";
+    }
+
+    echo "Замена значений URL...\n";
+    // Замена значений 
+    foreach ($tables as $table) {
+
+        $current_table = $table;
+        $stmtSearch = $pdo->prepare("show columns from `$current_table`");
+        $stmtSearch->execute();
+        $columns = $stmtSearch->fetchAll();
+        foreach ($columns as $column) {
+            $current_column = $column['Field'];
+            $stmtSearch = $pdo->prepare("select * from `$current_table` 
+            where `$current_column` 
+            Like :old_url LIMIT 1");
+            $stmtSearch->execute(['old_url' => "%$old_url%"]);
+            if ($stmtSearch->fetch() && isset($current_column)) {
+                echo "Таблица: $table, столбец: $current_column - найдено вхождение. Идёт замена...\n";
+                $stmtUpdate = $pdo->prepare("UPDATE `$table` 
+                  set `$current_column` = REPLACE(`$current_column`, :old_url, :new_url)
+                  WHERE `$current_column` LIKE :pattern");
+
+                $stmtUpdate->execute([
+                    "old_url" => $old_url,
+                    "new_url" => $new_url,
+                    "pattern" => "%$old_url%"
+                ]);
+                echo "Обновлено строк: " . $stmtUpdate->rowCount() . "\n";
+            } else if (!isset($current_column)) {
+                echo "Колонка $current_table.$current_column не доступна для редактирования,
+                т.к имеет недоступный формат (например: json)\n";
+            } else {
+                echo "- $table | $current_column Совпадений не найдено\n";
+            }
+        }
+        echo str_repeat("-", 80) . "\n";
+    }
+
+    echo "\nЗавершение работы\n";
+
+} catch (PDOException $e) {
+    echo "\nОшибка подключения: " . $e->getMessage();
+} catch (Exception $e) {
+    echo "\nОшибка: " . $e->getMessage();
+}

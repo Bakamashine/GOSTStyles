@@ -24,13 +24,13 @@
 
 \newcommand{\MyVerbatim}[1]{%
 	\begin{multicols}{2}%
-	{\par\fontsize{7}{9}\selectfont\VerbatimInput[breaklines=true]{#1}\par}%
+	\VerbatimInput[breaklines=true,fontsize=\fontsize{7}{9}\selectfont]{#1}%
 	\end{multicols}%
 }
 
 \newcommand{\MyVerbatimLarge}[1]{%
 	\begin{multicols}{2}%
-	{\par\fontsize{5}{7}\selectfont\VerbatimInput[breaklines=true,obeytabs,tabsize=1]{#1}\par}%
+	\VerbatimInput[breaklines=true,breakanywhere,obeytabs,tabsize=1,fontsize=\fontsize{5}{7}\selectfont]{#1}%
 	\end{multicols}%
 }
 

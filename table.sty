@@ -1,54 +1,120 @@
+% table.sty
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{table}[2026/05/25 Frame and stamp]
+
+% ------------------------------------------------
+% Пакеты
+% ------------------------------------------------
+
 \RequirePackage{array}
 \RequirePackage{tabularx}
 \RequirePackage{geometry}
 \RequirePackage{eso-pic}
+\RequirePackage{multirow}
+\RequirePackage{tabularray}
+
+% ------------------------------------------------
+% Геометрия страницы
+% ------------------------------------------------
 
 \geometry{
-	a4paper,
-	left=25mm,
-	right=5mm,
-	top=5mm,
-	bottom=25mm
+    a4paper,
+    left=25mm,
+    right=5mm,
+    top=5mm,
+    bottom=25mm
 }
 
-% \geometry{
-% 	a4paper,
-% 	left=25mm,
-% 	right=25mm,
-% 	top=25mm,
-% 	bottom=25mm
-% }
+% ------------------------------------------------
+% Сохраняем исходную ширину рамки
+% ------------------------------------------------
 
-% \usepackage[left=2cm,right=1cm,top=2cm,bottom=2cm]{geometry}
+\newlength{\FrameWidth}
+\setlength{\FrameWidth}{\textwidth}
 
-\usepackage{multirow}
-\usepackage{tabularray}
+\newlength{\FrameHeight}
+\setlength{\FrameHeight}{\textheight}
+
+% ------------------------------------------------
+% Уменьшаем ТОЛЬКО область текста
+% ------------------------------------------------
+
+\addtolength{\textwidth}{-5mm}
+% \addtolength{\oddsidemargin}{3mm}
+
+\addtolength{\textheight}{-2mm}
+% \addtolength{\leftmargin}{3mm}
+\addtolength{\topmargin}{3mm}
+
+% ------------------------------------------------
+% Настройки текста
+% ------------------------------------------------
+
+\setlength{\parindent}{0pt}
+
+% ------------------------------------------------
+% Нижний штамп
+% ------------------------------------------------
 
 \newcommand{\BackgroundTopTable}{%
+    \begingroup
+    \normalsize
     \begin{tblr}[t]{
-        width=\textwidth,
+        width=\FrameWidth,
         colspec={|c|c|c|c|c|X|c|}
-        }
-        \hline
-        & & & & &
-        \SetCell[r=3]{c} {09.02.07 Ф 2484 25\\ КП-ПЗ} &
-        \SetCell[r=2]{c,2em}Лист\\
-        \cline{1-5}
-        & & & & & & \\
-        \cline{1-5}\cline{7-7}
-        Изм. & Страница & № Документ. & Подп. & Дата & & \thepage \\
-        \hline
-    \end{tblr}
     }
 
-% Рамка вокруг текстовой области
+        \hline
+
+        & & & & &
+        \SetCell[r=3]{c}
+        {09.02.07 Ф 2484 25\\ КП-ПЗ}
+        &
+        \SetCell[r=2]{c,2em}
+        Лист
+
+        \\
+
+        \cline{1-5}
+
+        & & & & & &
+
+        \\
+
+        \cline{1-5}
+        \cline{7-7}
+
+        Изм. &
+        Страница &
+        № Документ. &
+        Подп. &
+        Дата &
+        &
+        \thepage
+
+        \\
+
+        \hline
+
+    \end{tblr}
+    \endgroup
+}
+
+% ------------------------------------------------
+% Рамка вокруг страницы
+% ------------------------------------------------
+
 \AddToShipoutPictureBG{%
     \AtTextLowerLeft{%
-        \framebox(\textwidth,\textheight){}
+        \framebox(\FrameWidth,\FrameHeight){}
     }%
 }
 
-% Нижняя таблица (штамп) — стыкуется с рамкой текста
+% ------------------------------------------------
+% Нижний штамп
+% ------------------------------------------------
+
 \AddToShipoutPictureBG{%
     \AtTextLowerLeft{%
         \BackgroundTopTable
